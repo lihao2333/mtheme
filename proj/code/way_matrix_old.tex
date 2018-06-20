@@ -1,0 +1,25 @@
+
+\begin{lstlisting}[language = matlab, numbers=left, \fontsize{6pt}{8pt}, 
+        numberstyle=\tiny,keywordstyle=\color{blue!70},  tabsize=2,
+        commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox,  breaklines=true,
+        rulesepcolor=\color{red!20!green!20!blue!20},basicstyle=\ttfamily]  
+
+%% 通过矩阵的方式完成一个frame的ofdm, 输入和输出都是调制信号
+%	input:
+%		X:	调制后的发送信号, 格式为[preamble, x1, x2...], preamble, xn 都是列向量
+%		H:	信道矩阵
+%		W:噪声矩阵
+%	output:
+%		Y:	输出序列
+function Y = way_matrix_old(X, H,  W, NumCP, MaxDelay)
+	[F, Fi] = gen_F(size(W,1));
+	X_time = (Fi*(X));
+	X_time_CP_Delay = [X_time(end-(NumCP+MaxDelay-1):end,:);X_time];
+	X_time_CP_H = H*X_time_CP_Delay ;
+	X_time_H_W = X_time_CP_H(1+(NumCP):end,:)+W;
+	Y = F*X_time_H_W;
+	Hi = Y(:,1)./X(:,1);
+	Hi = repmat(Hi,[1,size(X,2)]);
+	Y = Y./Hi;
+end
+ \end{lstlisting}  
